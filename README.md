@@ -1,10 +1,10 @@
 # AI-Based Autonomous Navigation System
 
-A deterministic 2D robotic navigation pipeline featuring footprint-aware A* path planning, conservative line-of-sight path smoothing, continuous kinematic unicycle motion tracking, dynamic obstacle detour replanning, and planar LiDAR range sensing.
+| LIVE INTERACTIVE SIMULATOR (GITHUB PAGES) |
+| :--- |
+| **Test the full autonomous navigation pipeline, unicycle kinematics, and 2D planar LiDAR raymarching directly in your browser with zero installation:**<br>**[Launch Interactive Web Showcase](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)** |
 
-> **LIVE INTERACTIVE WEB SHOWCASE**
-> Run the full autonomous navigation pipeline and real-time 2D planar LiDAR simulation directly in your browser with zero installation:
-> **Online Web Application:** [https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)
+A deterministic 2D robotic navigation pipeline featuring footprint-aware A* path planning, conservative line-of-sight path smoothing, continuous kinematic unicycle motion tracking, dynamic obstacle detour replanning, and planar LiDAR range sensing.
 
 ---
 
@@ -76,28 +76,28 @@ This repository provides an end-to-end, deterministic autonomous navigation soft
 
 ## Visual Demonstrations
 
-> **LIVE SIMULATION WORKSPACE**
-> Every navigation scenario below can be executed, observed, and tested in real time:
-> **Open Interactive Browser Simulator:** [https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)
+| LIVE INTERACTIVE SIMULATION WORKSPACE |
+| :--- |
+| **Every scenario illustrated below can be launched, observed, and tested in real time with continuous unicycle kinematics, 360-degree LiDAR raymarching, and dynamic obstacle replanning:**<br>**[Launch Live Interactive Simulator](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)** |
 
 ### 1. Static Arena Navigation and Pure Pursuit Tracking
 The robot navigates an 800 x 600 arena with mixed obstacles. The raw A* trajectory (80 waypoints) is post-processed into a 4-waypoint smoothed trajectory (95% reduction). The robot executes continuous kinematic tracking with active footprint clearance.
 
-*Interactive Online Demo:* Select "Default Navigation Arena" in the [Live Simulator](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/).
+**Interactive Online Simulation:** [Launch "Default Navigation Arena" Live](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)
 
 ![Static Navigation Arena Demonstration](assets/demo_static_arena.png)
 
 ### 2. Dynamic Obstacle Conflict and Online Detour Replanning
 A moving obstacle patrols across the planned route. The controller detects the spatial conflict, isolates a temporary planning layer, computes a collision-free bypass detour, and reaches the goal safely.
 
-*Interactive Online Demo:* Select "Dynamic Obstacle Online Detour" in the [Live Simulator](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/).
+**Interactive Online Simulation:** [Launch "Dynamic Obstacle Detour" Live](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)
 
 ![Dynamic Obstacle Detour Demonstration](assets/demo_dynamic_detour.png)
 
 ### 3. Blocked Corridor Fail-Safe Halting
 When obstacles completely obstruct all possible corridors, the replanning system determines that no traversable route exists. The robot halts safely at a distance with zero velocity, transitioning to status BLOCKED with zero collisions.
 
-*Interactive Online Demo:* Select "Blocked Corridor Safe Halting" in the [Live Simulator](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/).
+**Interactive Online Simulation:** [Launch "Blocked Corridor Safe Stop" Live](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)
 
 ![Blocked Corridor Safe Stop Demonstration](assets/demo_blocked_safestop.png)
 
