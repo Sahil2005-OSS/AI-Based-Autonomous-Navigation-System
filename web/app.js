@@ -1,5 +1,5 @@
 /**
- * AutonomousNav AI - Interactive Web Showcase & Simulation Engine
+ * AutonomousNav AI - Interactive Web Showcase & Real-Time Simulation Engine
  */
 
 // --- Benchmark Suite Data (Synced with results/evaluation_report.json) ---
@@ -190,10 +190,11 @@ let robot = {
 };
 
 let simTime = 0;
-let isPlaying = false;
+let isPlaying = true; // Auto-play enabled on load for real-time visualization
 let playSpeed = 2;
 let replansCount = 0;
 let simStatus = "TRACKING"; // TRACKING, REACHED_GOAL, BLOCKED
+let loopTimer = null;
 
 // DOM References
 const canvas = document.getElementById("simCanvas");
@@ -215,6 +216,9 @@ const telemTime = document.getElementById("telem-time");
 const telemReplans = document.getElementById("telem-replans");
 const statusBadge = document.getElementById("statusBadge");
 const statusText = document.getElementById("statusText");
+
+const SVG_PLAY = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+const SVG_PAUSE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
 
 // Initialize Benchmark Table
 function initBenchmarkTable() {
@@ -242,14 +246,16 @@ function initBenchmarkTable() {
 
 // Reset Simulator State
 function resetSimulation() {
+  if (loopTimer) {
+    clearTimeout(loopTimer);
+    loopTimer = null;
+  }
   currentScenario = SCENARIOS[currentScenarioKey];
+  const nextPt = currentScenario.smoothedPath.length > 1 ? currentScenario.smoothedPath[1] : currentScenario.goal;
   robot = {
     x: currentScenario.start.x,
     y: currentScenario.start.y,
-    theta: Math.atan2(
-      currentScenario.smoothedPath[1].y - currentScenario.start.y,
-      currentScenario.smoothedPath[1].x - currentScenario.start.x
-    ),
+    theta: Math.atan2(nextPt.y - currentScenario.start.y, nextPt.x - currentScenario.start.x),
     v: 0,
     omega: 0,
     targetIdx: 1
@@ -259,11 +265,101 @@ function resetSimulation() {
 
   if (currentScenarioKey === "blocked") {
     simStatus = "BLOCKED";
+    // Auto loop blocked scenario after 3.5s so viewer sees the safe halt repeatedly
+    loopTimer = setTimeout(() => {
+      if (isPlaying) resetSimulation();
+    }, 3500);
   } else {
     simStatus = "TRACKING";
   }
   updateUI();
   draw();
+}
+
+// 2D Planar LiDAR Raymarching Simulation
+function computeLidarScan(rx, ry, rTheta, maxRange = 180, numBeams = 64) {
+  const points = [];
+  const beams = [];
+  const fov = 2 * Math.PI;
+  const angleStep = fov / numBeams;
+
+  const obstacles = currentScenario.obstacles;
+  const dyns = currentScenario.dynamicObstacles;
+
+  // Active dynamic obstacle positions
+  const dynCircles = dyns.map(dyn => {
+    let dx = dyn.p1.x;
+    let dy = dyn.p1.y;
+    if (dyn.speed > 0) {
+      const distTotal = Math.hypot(dyn.p2.x - dyn.p1.x, dyn.p2.y - dyn.p1.y);
+      const cycle = (distTotal * 2) / dyn.speed;
+      const t = simTime % cycle;
+      const progress = t < cycle / 2 ? (t / (cycle / 2)) : (2 - (t / (cycle / 2)));
+      dx = dyn.p1.x + (dyn.p2.x - dyn.p1.x) * progress;
+      dy = dyn.p1.y + (dyn.p2.y - dyn.p1.y) * progress;
+    }
+    return { x: dx, y: dy, r: dyn.radius };
+  });
+
+  for (let i = 0; i < numBeams; i++) {
+    const angle = rTheta - Math.PI + i * angleStep;
+    const cosA = Math.cos(angle);
+    const sinA = Math.sin(angle);
+
+    let hitDist = maxRange;
+    const step = 4; // Sub-cell ray step
+
+    for (let r = 2; r < maxRange; r += step) {
+      const px = rx + r * cosA;
+      const py = ry + r * sinA;
+
+      // 1. Boundary check
+      if (px <= 0 || px >= currentScenario.width || py <= 0 || py >= currentScenario.height) {
+        hitDist = r;
+        break;
+      }
+
+      // 2. Static obstacles
+      let hit = false;
+      for (let j = 0; j < obstacles.length; j++) {
+        const obs = obstacles[j];
+        if (obs.type === "circle") {
+          if ((px - obs.cx) ** 2 + (py - obs.cy) ** 2 <= obs.radius ** 2) {
+            hitDist = r;
+            hit = true;
+            break;
+          }
+        } else if (obs.type === "rect") {
+          if (px >= obs.x && px <= obs.x + obs.width && py >= obs.y && py <= obs.y + obs.height) {
+            hitDist = r;
+            hit = true;
+            break;
+          }
+        }
+      }
+      if (hit) break;
+
+      // 3. Dynamic obstacles
+      for (let k = 0; k < dynCircles.length; k++) {
+        const d = dynCircles[k];
+        if ((px - d.x) ** 2 + (py - d.y) ** 2 <= d.r ** 2) {
+          hitDist = r;
+          hit = true;
+          break;
+        }
+      }
+      if (hit) break;
+    }
+
+    const hitX = rx + hitDist * cosA;
+    const hitY = ry + hitDist * sinA;
+    beams.push({ hitX, hitY, hitDist, isHit: hitDist < maxRange });
+    if (hitDist < maxRange) {
+      points.push({ x: hitX, y: hitY });
+    }
+  }
+
+  return { beams, points };
 }
 
 // Update Simulation Step
@@ -286,11 +382,17 @@ function updateSimulation(dt) {
       robot.v = 0;
       robot.omega = 0;
       updateUI();
+      // Auto loop after reaching goal for continuous demonstration
+      if (!loopTimer) {
+        loopTimer = setTimeout(() => {
+          if (isPlaying) resetSimulation();
+        }, 2200);
+      }
       return;
     }
   }
 
-  // Pure pursuit steering
+  // Pure pursuit lookahead steering
   const targetAngle = Math.atan2(dy, dx);
   let alpha = targetAngle - robot.theta;
   while (alpha > Math.PI) alpha -= 2 * Math.PI;
@@ -315,6 +417,8 @@ function updateSimulation(dt) {
 function draw() {
   const w = canvas.width;
   const h = canvas.height;
+  if (w <= 0 || h <= 0) return;
+
   const scW = currentScenario.width;
   const scH = currentScenario.height;
 
@@ -473,6 +577,32 @@ function draw() {
   ctx.lineWidth = 2;
   ctx.stroke();
 
+  // Active Robot Marker
+  const rx = robot.x * scale;
+  const ry = robot.y * scale;
+  const rRad = currentScenario.robotRadius * scale;
+
+  // Planar LiDAR Laser Fan & Return Pointcloud
+  const lidar = computeLidarScan(robot.x, robot.y, robot.theta, 160, 60);
+
+  // Laser Ray Beam Fan (Faint cyan)
+  lidar.beams.forEach(b => {
+    ctx.beginPath();
+    ctx.moveTo(rx, ry);
+    ctx.lineTo(b.hitX * scale, b.hitY * scale);
+    ctx.strokeStyle = b.isHit ? "rgba(56, 189, 248, 0.22)" : "rgba(56, 189, 248, 0.05)";
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  });
+
+  // Obstacle Pointcloud Contacts (Neon Cyan)
+  lidar.points.forEach(pt => {
+    ctx.beginPath();
+    ctx.arc(pt.x * scale, pt.y * scale, 2.5 * scale, 0, Math.PI * 2);
+    ctx.fillStyle = "#38bdf8";
+    ctx.fill();
+  });
+
   // Lookahead Target Marker
   if (simStatus === "TRACKING" && currentScenario.smoothedPath[robot.targetIdx]) {
     const tgt = currentScenario.smoothedPath[robot.targetIdx];
@@ -482,11 +612,6 @@ function draw() {
     ctx.lineWidth = 2;
     ctx.stroke();
   }
-
-  // Active Robot Marker
-  const rx = robot.x * scale;
-  const ry = robot.y * scale;
-  const rRad = currentScenario.robotRadius * scale;
 
   // Circular Footprint Ring
   ctx.beginPath();
@@ -557,9 +682,6 @@ function animate(timestamp) {
   requestAnimationFrame(animate);
 }
 
-const SVG_PLAY = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
-const SVG_PAUSE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
-
 // Event Listeners
 btnPlayPause.addEventListener("click", () => {
   isPlaying = !isPlaying;
@@ -590,17 +712,22 @@ speedSelector.addEventListener("change", (e) => {
   playSpeed = parseFloat(e.target.value);
 });
 
-// Window resize handling
+// Window resize handling with safe dimensions and DPR
 function resizeCanvas() {
   const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width * window.devicePixelRatio;
-  canvas.height = rect.height * window.devicePixelRatio;
+  const dpr = window.devicePixelRatio || 1;
+  const displayWidth = rect.width > 0 ? rect.width : 800;
+  const displayHeight = rect.height > 0 ? rect.height : 600;
+  canvas.width = displayWidth * dpr;
+  canvas.height = displayHeight * dpr;
   draw();
 }
 window.addEventListener("resize", resizeCanvas);
 
-// Initialize
+// Initialize Simulator
 initBenchmarkTable();
 resetSimulation();
+playIcon.innerHTML = SVG_PAUSE;
+playText.textContent = "Pause";
 resizeCanvas();
 requestAnimationFrame(animate);
