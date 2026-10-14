@@ -230,7 +230,7 @@ This log tracks implementation steps, milestone deliverables, and verification p
 
 ---
 
-## 8. Milestone 07 — Robot Footprint & Obstacle-Clearance Safety
+## 8. Milestone 07 - Robot Footprint & Obstacle-Clearance Safety
 - **Date:** 2026-10-14
 - **Author:** Senior Python and Robotics Software Developer
 - **Scope & Objectives:**
@@ -285,7 +285,7 @@ This log tracks implementation steps, milestone deliverables, and verification p
 
 ---
 
-## 9. Milestone 07.1 — Verify Swept-Footprint Collision Safety
+## 9. Milestone 07.1 - Verify Swept-Footprint Collision Safety
 - **Date:** 2026-10-14
 - **Author:** Senior Python and Robotics Software Developer
 - **Scope & Objectives:**
@@ -530,23 +530,23 @@ This log tracks implementation steps, milestone deliverables, and verification p
   - *Hardware GUI Usability:* Headless visualizer tests confirm Pygame pipeline and event processing; interactive display rendering was not verified with physical monitor hardware.
 - **Status:** Complete.
 
-### Milestone 11: Task 09.1 — Dynamic Safety and Replanning Audit
+### Milestone 11: Task 09.1 - Dynamic Safety and Replanning Audit
 - **Date:** 2026-10-14
 - **Objective:** Audit Task 09 dynamic obstacle motion, collision safety, replanning pipeline, and simulation determinism. Eliminate any between-update crossing collision gaps, verify invariant consistency, and confirm exact reproducibility.
 - **Audit Findings & Implementations:**
-  - *Objective 1 — Moving-Obstacle Collision Safety:*
+  - *Objective 1 - Moving-Obstacle Collision Safety:*
     - *Between-Update Crossing Collision Gap:* In naive point-to-segment checking, an obstacle crossing the robot's movement segment mid-step could evade detection if start and end distances were $> (r_{rob} + r_{obs})$. Resolved by implementing `check_moving_obstacle_step_collision` in [`src/autonomous_nav/dynamic_obstacle.py`](../src/autonomous_nav/dynamic_obstacle.py). Formulates synchronized relative continuous motion $\vec{P}(\lambda) = (R_0 - O_0) + \lambda(\Delta R - \Delta O)$ and partitions at obstacle turnaround points to guarantee exact minimum distance calculation across $[t, t+dt]$.
     - *Consistent Radii & Margin Policy:* Total clearance threshold is strictly $r_{total} = r_{rob} + r_{obs} + \delta_{margin}$.
     - *Boundary & Tangency Rules:* Exact tangency $d \le r_{total}$ triggers collision; $d > r_{total}$ is clear, matching static swept-footprint checker semantics.
     - *Simulation Clock & Update Ordering:* Simulation clock is synchronized at step start ($t = steps \times dt$), route conflict and continuous movement are verified over $[t, t+dt]$, and obstacle clock is advanced to $t + dt$ exactly once per completed step. Timing in [`src/autonomous_nav/visualizer.py`](../src/autonomous_nav/visualizer.py) synchronized to match [`src/autonomous_nav/controller.py`](../src/autonomous_nav/controller.py).
-  - *Objective 2 — Replanning & Temporary-World Behavior:*
+  - *Objective 2 - Replanning & Temporary-World Behavior:*
     - *Base World Immutability:* `create_temporary_planning_world` clones grid and clearance arrays via `np.copy()`; confirmed base world grid is unmutated.
     - *Clearance Inflation Invariant:* Temporary obstacle is inflated by `dyn.radius + safety_margin`; subsequent `update_clearance_grid()` inflates by `robot_radius`. Total restricted zone around obstacle center is $r_{obs} + \delta_{margin} + r_{rob}$ without double-counting.
     - *Start Pose Validation:* `find_safe_start_grid` validates robot continuous pose against both base and temp world clearance grids before accepting A* replanning.
     - *Swept Footprint Route Verification:* Replacement routes must pass continuous swept-footprint checks on all segments; if check fails, robot executes safe stop (`ControllerStatus.BLOCKED`).
     - *Failed Replan Invariant:* If A* fails or budget is exhausted while in conflict, robot immediately transitions to `BLOCKED` with $v=0, \omega=0$, preventing execution of obsolete unsafe routes.
     - *Replan Budget Exhaustion:* Exceeding `max_replans` while in conflict immediately triggers a safe stop rather than continuing or looping.
-  - *Objective 3 — Scenario Reproducibility:*
+  - *Objective 3 - Scenario Reproducibility:*
     - Repeated runs of `dynamic_obstacle.json` produced identical metrics: 381 steps, 19.05s sim time, 3 replans, final pose $(351.78, 68.79, -49.3^\circ)$, 0 collisions.
     - Repeated runs of `dynamic_obstacle_blocked.json` produced identical metrics: 0 steps, 0.00s sim time, 1 attempted replan, safe stop `BLOCKED`, 0 collisions.
     - Full evaluation suite runs 6 scenarios (4 navigation successes, 2 expected failures, 0 errors); results reflected in [`results/evaluation_report.json`](../results/evaluation_report.json).
@@ -570,7 +570,7 @@ This log tracks implementation steps, milestone deliverables, and verification p
      -> Exit code 0 (6 scenarios evaluated, 4 passed, 2 expected failures, 0 errors).
 - **Status:** Complete.
 
-### Milestone 12: Task 10 — GitHub and Portfolio Readiness
+### Milestone 12: Task 10 - GitHub and Portfolio Readiness
 - **Date:** 2026-10-14
 - **Objective:** Prepare repository for professional GitHub presentation without altering navigation algorithms. Audit repository structure, dependencies, `.gitignore`, documentation, clean setup reproducibility, and demo scripts.
 - **Audit Findings & Enhancements:**
@@ -595,7 +595,7 @@ This log tracks implementation steps, milestone deliverables, and verification p
      -> Exit code 0 (6 scenarios, 4 successes, 2 expected failures, 0 errors).
 - **Status:** Complete.
 
-### Milestone 13: Task 11 — Portfolio Demo and Visual Evidence Preparation
+### Milestone 13: Task 11 - Portfolio Demo and Visual Evidence Preparation
 - **Date:** 2026-10-14
 - **Objective:** Finalize portfolio demo sequences, presentation scripts, and visual evidence protocols. Verify interactive GUI execution in the active Windows desktop session without modifying working navigation subsystems.
 - **Audit Findings & Enhancements:**

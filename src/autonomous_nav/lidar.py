@@ -27,7 +27,7 @@ class LidarConfig:
 
     Attributes:
         num_beams: Total number of laser beams per scan rotation.
-        fov_rad: Total field of view in radians (default: 2*pi for 360° surround).
+        fov_rad: Total field of view in radians (default: 2*pi for 360-degree surround).
         min_range: Minimum measurable distance in world units.
         max_range: Maximum laser detection range in world units.
         range_noise_std: Standard deviation of additive Gaussian noise (sigma).

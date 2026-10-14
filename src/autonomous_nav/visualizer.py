@@ -599,7 +599,7 @@ class SimulationVisualizer:
             self._draw_label_value(surface, pad_x, y, "Robot Pose:", pos_text, COLOR_ROBOT)
             y += 18
 
-            head_text = f"{math.degrees(self.robot_state.theta):.1f}°"
+            head_text = f"{math.degrees(self.robot_state.theta):.1f} deg"
             self._draw_label_value(surface, pad_x, y, "Heading:", head_text, COLOR_TEXT_PRIMARY)
             y += 18
 
@@ -628,22 +628,22 @@ class SimulationVisualizer:
 
             # Continuous Status Badge
             if self.controller.status == ControllerStatus.REACHED_GOAL:
-                badge_text = "★ GOAL REACHED ★"
+                badge_text = "[GOAL REACHED]"
                 badge_color = COLOR_SUCCESS
             elif self.controller.status == ControllerStatus.COLLISION:
-                badge_text = "✖ COLLISION / STOPPED"
+                badge_text = "[COLLISION / STOPPED]"
                 badge_color = COLOR_DANGER
             elif self.controller.status == ControllerStatus.BLOCKED:
-                badge_text = "⛔ BLOCKED / SAFE STOP"
+                badge_text = "[BLOCKED / SAFE STOP]"
                 badge_color = COLOR_WARNING
             elif self.motion_paused:
-                badge_text = "⏸ PAUSED"
+                badge_text = "[PAUSED]"
                 badge_color = COLOR_TEXT_MUTED
             elif self.controller.status == ControllerStatus.TRACKING:
-                badge_text = "▶ TRACKING ROUTE"
+                badge_text = "[TRACKING ROUTE]"
                 badge_color = COLOR_TEXT_ACCENT
             else:
-                badge_text = "• READY"
+                badge_text = "[READY]"
                 badge_color = COLOR_TEXT_MUTED
 
         else:
@@ -663,16 +663,16 @@ class SimulationVisualizer:
                 y += 20
 
             if self.is_at_goal:
-                badge_text = "★ GOAL REACHED ★"
+                badge_text = "[GOAL REACHED]"
                 badge_color = COLOR_SUCCESS
             elif self.auto_play:
-                badge_text = "▶ AUTO PLAYING..."
+                badge_text = "[AUTO PLAYING]"
                 badge_color = COLOR_TEXT_ACCENT
             elif self.path:
-                badge_text = "• READY (PAUSED)"
+                badge_text = "[READY / PAUSED]"
                 badge_color = COLOR_TEXT_MUTED
             else:
-                badge_text = "✖ NO PATH"
+                badge_text = "[NO PATH]"
                 badge_color = COLOR_DANGER
 
         badge_surf = self.font_bold.render(badge_text, True, badge_color)
