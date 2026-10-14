@@ -241,3 +241,71 @@
   6. *Safe Stopping Halting Policy:* If replanning cannot find an alternate route (e.g. bottleneck blocked), the robot does **NOT** proceed along the unsafe route. It sets $v=0, \omega=0$, transitions to `ControllerStatus.BLOCKED`, and stops at a safe standoff distance with zero collisions.
 - **Documented Theoretical Limitations:**
   - *Current Position vs. Future Trajectory:* The replanning trigger checks the dynamic obstacle's *current* position relative to the remaining route. It does not perform full spatiotemporal space-time planning ($x, y, t$) or velocity obstacle prediction. If an obstacle later moves into the replanned path, a subsequent replan is triggered. Full dynamic collision avoidance across fast-moving or adversarial agents requires predictive time-extended planning.
+
+---
+
+## 11. 2D Planar LiDAR Sensor Simulation Subsystem (`autonomous_nav.lidar`)
+- **Module:** [`src/autonomous_nav/lidar.py`](../src/autonomous_nav/lidar.py)
+- **Primary Roles & Public APIs:**
+  - [`LidarConfig`](../src/autonomous_nav/lidar.py#L24-L54): Immutable configuration dataclass specifying sensor physics:
+    - `num_beams`: Total laser beams per 360-degree rotation (default: 180 beams, 2.0-degree angular resolution).
+    - `fov_rad`: Field of view in radians (default: $2\pi$ for 360-degree surround sensing).
+    - `min_range` & `max_range`: Radial operational window (default: 2.0 to 200.0 world units).
+    - `range_noise_std`: Standard deviation $\sigma$ of additive zero-mean Gaussian measurement noise (default: 0.5 units).
+    - `dropout_prob`: Bernoulli trial probability [0.0, 1.0] of beam absorption or optical return loss (default: 0.0).
+    - Strict validation: Enforces $N \ge 2$, $\text{fov} \in (0, 2\pi]$, $0 \le d_{\min} < d_{\max}$, $\sigma \ge 0$, and $p \in [0, 1]$.
+  - [`LidarScan`](../src/autonomous_nav/lidar.py#L57-L75): Structured scan frame holding:
+    - `timestamp`: Virtual simulation time instant of capture.
+    - `pose`: Robot state tuple $(x, y, \theta)$ at trigger time.
+    - `angles`: Relative bearing angle array $[-\text{fov}/2, +\text{fov}/2)$ centered along robot heading.
+    - `ranges`: Measured radial distances clamped to `max_range` on miss.
+    - `intensities`: Normalized return signal intensity (1.0 for valid reflection, 0.0 for dropout/miss).
+    - `pointcloud_world`: Re-projected continuous Cartesian points $[(x_i, y_i)]$ of confirmed obstacle contacts.
+  - [`LidarSensor`](../src/autonomous_nav/lidar.py#L77-L245): Planar raymarching sensor simulator:
+    - `scan(robot_x, robot_y, robot_theta, sim_time, dynamic_obstacles, random_seed)`: Casts radial beams through sub-cell stepping ($\Delta r = 0.4 \times R_{\text{grid}}$), checking arena boundaries, static occupancy cells, and active dynamic obstacles.
+    - `segment_clusters(scan, cluster_distance_threshold, min_cluster_points)`: Performs unsupervised Euclidean neighbor chaining over Cartesian returns to isolate discrete spatial obstacle clusters for downstream tracking and perception.
+- **Mathematical Formulations:**
+  - *Beam Bearing Angles:*
+    $$\theta_{rel, i} = -\frac{\text{FOV}}{2} + i \cdot \frac{\text{FOV}}{N}, \quad i \in \{0, 1, \dots, N-1\}$$
+  - *Global Ray Trajectory:*
+    $$\theta_{global, i} = \theta_{robot} + \theta_{rel, i}$$
+    $$p(r) = \begin{bmatrix} x_{robot} + r \cdot \cos(\theta_{global, i}) \\ y_{robot} + r \cdot \sin(\theta_{global, i}) \end{bmatrix}, \quad r \in [d_{min}, d_{max}]$$
+  - *Noisy Range Observation:*
+    $$d_{measured} = \min\left(d_{max}, \max\left(d_{min}, d_{true} + \epsilon\right)\right), \quad \epsilon \sim \mathcal{N}(0, \sigma^2)$$
+  - *Cartesian Pointcloud Reprojection:*
+    $$\begin{bmatrix} x_{hit} \\ y_{hit} \end{bmatrix} = \begin{bmatrix} x_{robot} + d_{measured} \cdot \cos(\theta_{global, i}) \\ y_{robot} + d_{measured} \cdot \sin(\theta_{global, i}) \end{bmatrix}$$
+- **Verification & Guarantees:**
+  - Verified across 11 unit tests in `tests/test_lidar.py`.
+  - Deterministic and reproducible when supplied with explicit `random_seed`.
+  - Non-finite pose inputs ($NaN$, $\pm\infty$) are strictly rejected with ValueError.
+  - Sub-cell step resolution guarantees zero tunneling through 10-unit static obstacle cells.
+
+---
+
+## 12. Interactive Web Showcase and Telemetry Dashboard (`web/`)
+- **Location:** [`web/`](../web/) (`index.html`, `style.css`, `app.js`)
+- **Primary Roles & System Features:**
+  - Standalone, zero-dependency client-side application executing real-time 2D robotic navigation simulation in modern web browsers.
+  - **HTML5 Canvas Simulation Viewport:**
+    - High-DPI rendering of 2D arena environments with discrete obstacle matrices, static clearance inflation zones, and dynamic patrol entities.
+    - Continuous robot unicycle pose tracking $(x, y, \theta)$ with lookahead target indicator and circular footprint buffer overlay ($R = 15.0$ units).
+    - Dual trajectory visualization rendering both raw orthogonal/diagonal A* waypoints and post-processed smoothed line-of-sight shortcut segments.
+    - 360-degree LiDAR laser beam fan projection with color-coded range returns and pointcloud scatter contacts.
+  - **Real-Time Telemetry HUD:**
+    - Continuous coordinate reporting: $(x, y)$ world coordinates, heading $\theta$ (degrees and radians), linear velocity $v$, and angular steering velocity $\omega$.
+    - Dynamic operational state indicators: `RUNNING`, `REACHED_GOAL`, `COLLISION`, `BLOCKED`, and `PAUSED`.
+    - Real-time replan event counter logging dynamic obstacle conflict detours.
+  - **Interactive Scenario Switcher:**
+    - `Default Arena`: 800 x 600 baseline workspace with polygon and rectangular obstacles.
+    - `Dynamic Detour`: Moving patrol obstacle triggering mid-flight route replanning.
+    - `Blocked Safe-Stop`: Solid wall obstacle triggering immediate safe zero-velocity halting.
+    - `Bottleneck Clearance`: 20-unit narrow passage rejecting a 30-unit diameter robot.
+    - `Open World`: Direct straight-line shortcut benchmark.
+  - **Comprehensive Benchmark Explorer:**
+    - Live interactive tabular breakdown of performance KPIs across scenarios.
+    - Zero horizontal text wrapping via strict whitespace formatting.
+    - Sticky navigation header with anchor offset compensation (`scroll-margin-top: 85px`) ensuring headers remain visible when navigating deep links.
+- **Aesthetic and Security Standards:**
+  - Strictly adheres to zero-emoji and zero-em-dash presentation standards using scalable SVG vector icons and plain ASCII punctuation.
+  - 100% client-side HTML5/CSS/JavaScript with zero external CDN dependencies, external script tracking, or remote network calls.
+
