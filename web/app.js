@@ -9,7 +9,7 @@ const BENCHMARK_DATA = [
     plan: "PASS",
     nodes: 1846,
     planTime: "134.27 ms",
-    waypoints: "80 → 4 (-95.0%)",
+    waypoints: "80 -> 4 (-95.0%)",
     traveled: "893.5 u",
     simTime: "30.10 s",
     outcome: "REACHED_GOAL",
@@ -20,7 +20,7 @@ const BENCHMARK_DATA = [
     plan: "PASS",
     nodes: 15,
     planTime: "1.14 ms",
-    waypoints: "15 → 2 (-86.7%)",
+    waypoints: "15 -> 2 (-86.7%)",
     traveled: "193.0 u",
     simTime: "12.65 s",
     outcome: "REACHED_GOAL",
@@ -31,7 +31,7 @@ const BENCHMARK_DATA = [
     plan: "PASS",
     nodes: 158,
     planTime: "13.63 ms",
-    waypoints: "25 → 4 (-84.0%)",
+    waypoints: "25 -> 4 (-84.0%)",
     traveled: "257.9 u",
     simTime: "14.30 s",
     outcome: "REACHED_GOAL",
@@ -64,7 +64,7 @@ const BENCHMARK_DATA = [
     plan: "PASS",
     nodes: 31,
     planTime: "1.08 ms",
-    waypoints: "31 → 2 (-93.5%)",
+    waypoints: "31 -> 2 (-93.5%)",
     traveled: "439.8 u",
     simTime: "19.05 s",
     outcome: "REACHED_GOAL",
@@ -226,15 +226,15 @@ function initBenchmarkTable() {
     const outcomePill = row.outcome === "REACHED_GOAL" ? "pill-success" : (row.outcome === "NOT_RUN" ? "pill-warn" : "pill-fail");
 
     tr.innerHTML = `
-      <td style="font-weight: 600; color: #fff;">${row.name}</td>
-      <td><span class="pill ${planPill}">${row.plan}</span></td>
-      <td>${row.nodes}</td>
-      <td>${row.planTime}</td>
-      <td style="font-family: var(--font-mono); font-size: 0.82rem;">${row.waypoints}</td>
-      <td>${row.traveled}</td>
-      <td>${row.simTime}</td>
-      <td><span class="pill ${outcomePill}">${row.outcome}</span></td>
-      <td><span class="pill ${row.safety === 'SAFE' ? 'pill-success' : 'pill-warn'}">${row.safety}</span></td>
+      <td style="font-weight: 600; color: #fff; white-space: nowrap;">${row.name}</td>
+      <td style="white-space: nowrap;"><span class="pill ${planPill}">${row.plan}</span></td>
+      <td style="font-family: var(--font-mono); white-space: nowrap;">${row.nodes}</td>
+      <td style="font-family: var(--font-mono); white-space: nowrap;">${row.planTime}</td>
+      <td style="font-family: var(--font-mono); font-size: 0.82rem; white-space: nowrap;">${row.waypoints}</td>
+      <td style="font-family: var(--font-mono); white-space: nowrap;">${row.traveled}</td>
+      <td style="font-family: var(--font-mono); white-space: nowrap;">${row.simTime}</td>
+      <td style="white-space: nowrap;"><span class="pill ${outcomePill}">${row.outcome}</span></td>
+      <td style="white-space: nowrap;"><span class="pill ${row.safety === 'SAFE' ? 'pill-success' : 'pill-warn'}">${row.safety}</span></td>
     `;
     tbody.appendChild(tr);
   });
@@ -519,7 +519,7 @@ function draw() {
 function updateUI() {
   telemPos.textContent = `(${robot.x.toFixed(1)}, ${robot.y.toFixed(1)})`;
   const headingDeg = (robot.theta * 180 / Math.PI) % 360;
-  telemHeading.textContent = `${headingDeg.toFixed(1)}°`;
+  telemHeading.textContent = `${headingDeg.toFixed(1)} deg`;
   telemSpeed.textContent = `${robot.v.toFixed(1)} u/s`;
   telemOmega.textContent = `${robot.omega.toFixed(2)} rad/s`;
 
@@ -557,17 +557,20 @@ function animate(timestamp) {
   requestAnimationFrame(animate);
 }
 
+const SVG_PLAY = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>';
+const SVG_PAUSE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>';
+
 // Event Listeners
 btnPlayPause.addEventListener("click", () => {
   isPlaying = !isPlaying;
-  playIcon.textContent = isPlaying ? "⏸" : "▶";
+  playIcon.innerHTML = isPlaying ? SVG_PAUSE : SVG_PLAY;
   playText.textContent = isPlaying ? "Pause" : "Play";
 });
 
 btnStep.addEventListener("click", () => {
   if (isPlaying) {
     isPlaying = false;
-    playIcon.textContent = "▶";
+    playIcon.innerHTML = SVG_PLAY;
     playText.textContent = "Play";
   }
   updateSimulation(0.05);

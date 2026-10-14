@@ -15,7 +15,11 @@
   <!-- Top Navigation Header -->
   <header class="navbar">
     <div class="brand">
-      <div class="brand-icon">⚡</div>
+      <div class="brand-icon">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="3 11 22 2 13 21 11 13 3 11"/>
+        </svg>
+      </div>
       <h1 class="brand-title">AutonomousNav AI</h1>
       <span class="brand-badge">v1.0.0 Production</span>
     </div>
@@ -37,30 +41,48 @@
     <!-- Hero / KPI Highlights Banner -->
     <section class="kpi-grid">
       <div class="glass-panel kpi-card">
-        <div class="kpi-icon icon-blue">📉</div>
+        <div class="kpi-icon icon-blue">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 18 13.5 8.5 8.5 13.5 1 6"/>
+            <polyline points="17 18 23 18 23 12"/>
+          </svg>
+        </div>
         <div>
           <div class="kpi-val" id="kpi-reduction">95.0%</div>
           <div class="kpi-label">Waypoint Reduction</div>
         </div>
       </div>
       <div class="glass-panel kpi-card">
-        <div class="kpi-icon icon-emerald">🛡️</div>
+        <div class="kpi-icon icon-emerald">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          </svg>
+        </div>
         <div>
           <div class="kpi-val">100%</div>
           <div class="kpi-label">Swept-Footprint Safe</div>
         </div>
       </div>
       <div class="glass-panel kpi-card">
-        <div class="kpi-icon icon-gold">⚡</div>
+        <div class="kpi-icon icon-gold">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+          </svg>
+        </div>
         <div>
           <div class="kpi-val">&lt; 1.5 ms</div>
           <div class="kpi-label">Dynamic Replan Time</div>
         </div>
       </div>
       <div class="glass-panel kpi-card">
-        <div class="kpi-icon icon-purple">🧪</div>
+        <div class="kpi-icon icon-purple">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 11l3 3L22 4"/>
+            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          </svg>
+        </div>
         <div>
-          <div class="kpi-val">163 / 163</div>
+          <div class="kpi-val">174 / 174</div>
           <div class="kpi-label">Regression Tests Passing</div>
         </div>
       </div>
@@ -84,7 +106,10 @@
               <option value="open">Open World Direct Shortcut</option>
             </select>
             <button id="btnPlayPause" class="btn-ctrl btn-primary">
-              <span id="playIcon">▶</span> <span id="playText">Play</span>
+              <span id="playIcon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              </span>
+              <span id="playText">Play</span>
             </button>
             <button id="btnStep" class="btn-ctrl">Step</button>
             <button id="btnReset" class="btn-ctrl">Reset</button>
@@ -118,7 +143,7 @@
           </div>
           <div class="telem-row">
             <span class="telem-label">Heading Angle</span>
-            <span class="telem-val" id="telem-heading">0.0°</span>
+            <span class="telem-val" id="telem-heading">0.0 deg</span>
           </div>
           <div class="telem-row">
             <span class="telem-label">Linear Velocity</span>
@@ -171,7 +196,7 @@
               <th>Plan Status</th>
               <th>Expanded Nodes</th>
               <th>Planning Time</th>
-              <th>Waypoints (Raw → Smooth)</th>
+              <th>Waypoints (Raw / Smooth)</th>
               <th>Traveled Distance</th>
               <th>Simulated Time</th>
               <th>Outcome</th>
@@ -195,7 +220,7 @@
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem;">
         <div style="padding: 1.25rem; background: rgba(15, 19, 26, 0.7); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
           <h3 style="font-size: 1rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">Swept-Footprint Geometry</h3>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">Evaluates continuous movement segment $S=[P_0, P_1]$ carrying circular envelope $R$ against all obstacle cells using exact slab intersections and extreme-point distance minimization. Tangential contact counts as collision.</p>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">Evaluates continuous movement segment S=[P0, P1] carrying circular envelope R against all obstacle cells using exact slab intersections and extreme-point distance minimization. Tangential contact counts as collision.</p>
         </div>
         <div style="padding: 1.25rem; background: rgba(15, 19, 26, 0.7); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
           <h3 style="font-size: 1rem; color: var(--accent-emerald); margin-bottom: 0.5rem;">Temporary World Isolation</h3>
@@ -203,7 +228,7 @@
         </div>
         <div style="padding: 1.25rem; background: rgba(15, 19, 26, 0.7); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
           <h3 style="font-size: 1rem; color: var(--accent-rose); margin-bottom: 0.5rem;">Fail-Safe Halting Contract</h3>
-          <p style="font-size: 0.85rem; color: var(--text-secondary);">If passages are fully blocked or the replan budget is exhausted while in conflict, the controller commands zero velocities ($v=0, \omega=0$) and transitions to <code>BLOCKED</code> with zero collisions.</p>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">If passages are fully blocked or the replan budget is exhausted while in conflict, the controller commands zero velocities (v=0, omega=0) and transitions to <code>BLOCKED</code> with zero collisions.</p>
         </div>
       </div>
     </section>
@@ -211,7 +236,7 @@
   </main>
 
   <footer>
-    <p>© 2026 AI-Based Autonomous Navigation System | Designed for High-Reliability Robotics</p>
+    <p>(c) 2026 AI-Based Autonomous Navigation System | Designed for High-Reliability Robotics</p>
   </footer>
 
   <script src="app.js"></script>

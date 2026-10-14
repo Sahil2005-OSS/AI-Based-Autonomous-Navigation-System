@@ -431,9 +431,21 @@ canvas#simCanvas {
   color: var(--text-secondary);
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
+#simulator,
+#benchmarks,
+#architecture {
+  scroll-margin-top: 85px;
+}
+
 .benchmark-table-container {
   overflow-x: auto;
   border-radius: var(--radius-md);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-focus) var(--bg-secondary);
 }
 
 table.benchmark-table {
@@ -452,12 +464,15 @@ table.benchmark-table th {
   letter-spacing: 0.05em;
   padding: 0.9rem 1.25rem;
   border-bottom: 1px solid var(--border-subtle);
+  white-space: nowrap;
 }
 
 table.benchmark-table td {
   padding: 0.9rem 1.25rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.04);
   color: var(--text-primary);
+  white-space: nowrap;
+  vertical-align: middle;
 }
 
 table.benchmark-table tr:hover td {
