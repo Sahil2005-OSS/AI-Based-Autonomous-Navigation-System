@@ -1,0 +1,29 @@
+{
+  "scenario_name": "obstacle_detour",
+  "world": {
+    "width": 300.0,
+    "height": 200.0,
+    "grid_resolution": 10.0
+  },
+  "robot": {
+    "start_position": [30.0, 100.0],
+    "target_position": [270.0, 100.0],
+    "radius": 10.0,
+    "max_speed": 40.0,
+    "sensor_range": 100.0
+  },
+  "obstacles": [
+    {
+      "id": 1,
+      "type": "rectangle",
+      "position": [140.0, 0.0],
+      "width": 20.0,
+      "height": 140.0
+    }
+  ],
+  "simulation": {
+    "fps": 60,
+    "time_step": 0.05,
+    "max_steps": 1500
+  }
+}

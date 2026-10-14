@@ -1,0 +1,52 @@
+{
+  "scenario_name": "dynamic_obstacle_detour",
+  "world": {
+    "width": 400.0,
+    "height": 300.0,
+    "grid_resolution": 10.0
+  },
+  "robot": {
+    "radius": 15.0,
+    "start_position": [
+      50.0,
+      60.0
+    ],
+    "target_position": [
+      350.0,
+      60.0
+    ],
+    "max_speed": 40.0
+  },
+  "obstacles": [
+    {
+      "id": 1,
+      "type": "rectangle",
+      "position": [
+        170.0,
+        110.0
+      ],
+      "width": 60.0,
+      "height": 70.0
+    }
+  ],
+  "dynamic_obstacles": [
+    {
+      "id": 101,
+      "type": "circle",
+      "radius": 15.0,
+      "start_position": [
+        200.0,
+        35.0
+      ],
+      "end_position": [
+        200.0,
+        85.0
+      ],
+      "speed": 15.0
+    }
+  ],
+  "simulation": {
+    "time_step": 0.05,
+    "max_steps": 2500
+  }
+}

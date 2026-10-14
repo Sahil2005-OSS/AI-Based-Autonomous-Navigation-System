@@ -1,0 +1,36 @@
+{
+  "scenario_name": "insufficient_clearance",
+  "world": {
+    "width": 200.0,
+    "height": 200.0,
+    "grid_resolution": 10.0
+  },
+  "robot": {
+    "start_position": [30.0, 100.0],
+    "target_position": [170.0, 100.0],
+    "radius": 15.0,
+    "max_speed": 40.0,
+    "sensor_range": 100.0
+  },
+  "obstacles": [
+    {
+      "id": 1,
+      "type": "rectangle",
+      "position": [90.0, 0.0],
+      "width": 20.0,
+      "height": 90.0
+    },
+    {
+      "id": 2,
+      "type": "rectangle",
+      "position": [90.0, 110.0],
+      "width": 20.0,
+      "height": 90.0
+    }
+  ],
+  "simulation": {
+    "fps": 60,
+    "time_step": 0.05,
+    "max_steps": 1000
+  }
+}

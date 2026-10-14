@@ -1,0 +1,62 @@
+{
+  "scenario_name": "dynamic_obstacle_blocked",
+  "world": {
+    "width": 300.0,
+    "height": 200.0,
+    "grid_resolution": 10.0
+  },
+  "robot": {
+    "radius": 10.0,
+    "start_position": [
+      50.0,
+      100.0
+    ],
+    "target_position": [
+      250.0,
+      100.0
+    ],
+    "max_speed": 30.0
+  },
+  "obstacles": [
+    {
+      "id": 1,
+      "type": "rectangle",
+      "position": [
+        130.0,
+        0.0
+      ],
+      "width": 40.0,
+      "height": 70.0
+    },
+    {
+      "id": 2,
+      "type": "rectangle",
+      "position": [
+        130.0,
+        130.0
+      ],
+      "width": 40.0,
+      "height": 70.0
+    }
+  ],
+  "dynamic_obstacles": [
+    {
+      "id": 102,
+      "type": "circle",
+      "radius": 15.0,
+      "start_position": [
+        150.0,
+        95.0
+      ],
+      "end_position": [
+        150.0,
+        105.0
+      ],
+      "speed": 5.0
+    }
+  ],
+  "simulation": {
+    "time_step": 0.05,
+    "max_steps": 1000
+  }
+}

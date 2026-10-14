@@ -1,0 +1,41 @@
+{
+  "scenario_name": "default_navigation_arena",
+  "world": {
+    "width": 800,
+    "height": 600,
+    "grid_resolution": 10
+  },
+  "robot": {
+    "start_position": [50.0, 50.0],
+    "target_position": [750.0, 550.0],
+    "radius": 15.0,
+    "max_speed": 40.0,
+    "sensor_range": 100.0
+  },
+  "obstacles": [
+    {
+      "id": 1,
+      "type": "circle",
+      "position": [200.0, 200.0],
+      "radius": 40.0
+    },
+    {
+      "id": 2,
+      "type": "rectangle",
+      "position": [400.0, 250.0],
+      "width": 80.0,
+      "height": 160.0
+    },
+    {
+      "id": 3,
+      "type": "circle",
+      "position": [600.0, 400.0],
+      "radius": 50.0
+    }
+  ],
+  "simulation": {
+    "fps": 60,
+    "time_step": 0.05,
+    "max_steps": 2000
+  }
+}
