@@ -2,6 +2,8 @@
 
 A deterministic 2D robotic navigation pipeline featuring footprint-aware A* path planning, conservative line-of-sight path smoothing, continuous kinematic unicycle motion tracking, dynamic obstacle detour replanning, and planar LiDAR range sensing.
 
+**Live Interactive Simulator (GitHub Pages):** [https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)
+
 ---
 
 ## Executive Summary
@@ -15,7 +17,7 @@ This repository provides an end-to-end, deterministic autonomous navigation soft
 - Online Dynamic Obstacle Detour Replanning: Real-time route conflict detection with isolated temporary planning grids for detour calculation without mutating the static world map.
 - Guaranteed Fail-Safe Halting: Immediate zero-velocity stopping contract (ControllerStatus.BLOCKED) when corridors are impassable.
 - Planar LiDAR Range Simulation: 2D time-of-flight laser rangefinder with configurable field of view, beam counts, raymarching, Gaussian range noise, and Euclidean spatial pointcloud clustering.
-- Interactive Visualizers: Real-time desktop simulation window (Pygame) and zero-dependency glassmorphic web dashboard (HTML5 Canvas).
+- Interactive Visualizers: Real-time desktop simulation window (Pygame) and live zero-dependency web dashboard deployed on GitHub Pages ([https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)).
 
 ---
 
@@ -72,7 +74,7 @@ This repository provides an end-to-end, deterministic autonomous navigation soft
 
 ## Visual Demonstrations
 
-The system includes visual verification assets captured during simulation execution:
+The system includes visual verification assets captured during simulation execution. You can also run and interact with these scenarios directly in your browser without installation via the [Live GitHub Pages Showcase](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/).
 
 ### 1. Static Arena Navigation and Pure Pursuit Tracking
 The robot navigates an 800 x 600 arena with mixed obstacles. The raw A* trajectory (80 waypoints) is post-processed into a 4-waypoint smoothed trajectory (95% reduction). The robot executes continuous kinematic tracking with active footprint clearance.
