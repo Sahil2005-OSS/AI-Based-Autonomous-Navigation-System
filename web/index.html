@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AutonomousNav AI | Autonomous Navigation System Showcase</title>
+  <meta name="description" content="Interactive 2D simulation, footprint-safe A* trajectory planning, conservative line-of-sight path smoothing, and kinematic pure pursuit tracking.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="navbar">
+    <div class="brand">
+      <div class="brand-icon">⚡</div>
+      <h1 class="brand-title">AutonomousNav AI</h1>
+      <span class="brand-badge">v1.0.0 Production</span>
+    </div>
+    <nav class="nav-links">
+      <a href="#simulator" class="nav-link">Interactive Simulator</a>
+      <a href="#benchmarks" class="nav-link">Benchmark Suite</a>
+      <a href="#architecture" class="nav-link">Safety Architecture</a>
+      <a href="https://github.com/Sahil2005-OSS/AI-Based-Autonomous-Navigation-System" target="_blank" rel="noopener noreferrer" class="btn-github">
+        <svg height="18" width="18" viewBox="0 0 16 16" fill="currentColor">
+          <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+        </svg>
+        <span>GitHub Repository</span>
+      </a>
+    </nav>
+  </header>
+
+  <main class="container">
+
+    <!-- Hero / KPI Highlights Banner -->
+    <section class="kpi-grid">
+      <div class="glass-panel kpi-card">
+        <div class="kpi-icon icon-blue">📉</div>
+        <div>
+          <div class="kpi-val" id="kpi-reduction">95.0%</div>
+          <div class="kpi-label">Waypoint Reduction</div>
+        </div>
+      </div>
+      <div class="glass-panel kpi-card">
+        <div class="kpi-icon icon-emerald">🛡️</div>
+        <div>
+          <div class="kpi-val">100%</div>
+          <div class="kpi-label">Swept-Footprint Safe</div>
+        </div>
+      </div>
+      <div class="glass-panel kpi-card">
+        <div class="kpi-icon icon-gold">⚡</div>
+        <div>
+          <div class="kpi-val">&lt; 1.5 ms</div>
+          <div class="kpi-label">Dynamic Replan Time</div>
+        </div>
+      </div>
+      <div class="glass-panel kpi-card">
+        <div class="kpi-icon icon-purple">🧪</div>
+        <div>
+          <div class="kpi-val">163 / 163</div>
+          <div class="kpi-label">Regression Tests Passing</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Simulator Workspace -->
+    <section id="simulator" class="workspace-grid">
+
+      <!-- Canvas & Simulation Viewport -->
+      <div class="glass-panel canvas-panel">
+        <div class="panel-header">
+          <div class="panel-title">
+            <span>2D Arena Simulation Viewport</span>
+          </div>
+          <div class="controls-bar">
+            <select id="scenarioSelector" class="select-scenario" aria-label="Select Scenario">
+              <option value="default">Default Navigation Arena (800x600)</option>
+              <option value="dynamic">Dynamic Obstacle Online Detour</option>
+              <option value="blocked">Blocked Corridor Safe Halting</option>
+              <option value="detour">Wall Obstacle Detour Bypass</option>
+              <option value="open">Open World Direct Shortcut</option>
+            </select>
+            <button id="btnPlayPause" class="btn-ctrl btn-primary">
+              <span id="playIcon">▶</span> <span id="playText">Play</span>
+            </button>
+            <button id="btnStep" class="btn-ctrl">Step</button>
+            <button id="btnReset" class="btn-ctrl">Reset</button>
+            <select id="speedSelector" class="select-scenario" aria-label="Playback Speed">
+              <option value="1">1x Speed</option>
+              <option value="2" selected>2x Speed</option>
+              <option value="4">4x Speed</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="canvas-wrapper">
+          <canvas id="simCanvas" width="800" height="600"></canvas>
+        </div>
+      </div>
+
+      <!-- Telemetry & Diagnostics Sidebar -->
+      <div class="glass-panel telemetry-panel">
+        <div class="status-badge-container">
+          <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">STATUS</span>
+          <div id="statusBadge" class="status-indicator status-tracking">
+            <span class="status-dot"></span>
+            <span id="statusText">READY</span>
+          </div>
+        </div>
+
+        <div class="telemetry-group">
+          <div class="telem-row">
+            <span class="telem-label">Robot Position</span>
+            <span class="telem-val" id="telem-pos">(50.0, 50.0)</span>
+          </div>
+          <div class="telem-row">
+            <span class="telem-label">Heading Angle</span>
+            <span class="telem-val" id="telem-heading">0.0°</span>
+          </div>
+          <div class="telem-row">
+            <span class="telem-label">Linear Velocity</span>
+            <span class="telem-val" id="telem-speed">0.0 u/s</span>
+          </div>
+          <div class="telem-row">
+            <span class="telem-label">Angular Velocity</span>
+            <span class="telem-val" id="telem-omega">0.00 rad/s</span>
+          </div>
+          <div class="telem-row">
+            <span class="telem-label">Distance to Goal</span>
+            <span class="telem-val" id="telem-dist">764.9 u</span>
+          </div>
+          <div class="telem-row">
+            <span class="telem-label">Simulation Time</span>
+            <span class="telem-val" id="telem-time">0.00 s</span>
+          </div>
+          <div class="telem-row">
+            <span class="telem-label">Replans Executed</span>
+            <span class="telem-val" id="telem-replans">0</span>
+          </div>
+        </div>
+
+        <div class="legend-box">
+          <div style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); font-weight: 700; margin-bottom: 0.25rem;">Visual Legend</div>
+          <div class="legend-item"><span class="legend-swatch" style="background: #10b981;"></span> Start Position Marker</div>
+          <div class="legend-item"><span class="legend-swatch" style="background: #fbbf24;"></span> Target Goal Position</div>
+          <div class="legend-item"><span class="legend-swatch" style="background: #4678aa;"></span> Raw A* Route</div>
+          <div class="legend-item"><span class="legend-swatch" style="background: #fbbf24;"></span> Smoothed Trajectory (Gold)</div>
+          <div class="legend-item"><span class="legend-swatch" style="background: #f43f5e;"></span> Solid Occupied Obstacle</div>
+          <div class="legend-item"><span class="legend-swatch" style="background: #ec4899;"></span> Dynamic Moving Obstacle</div>
+          <div class="legend-item"><span class="legend-swatch" style="background: #38bdf8;"></span> Robot Footprint Ring (R=15)</div>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Reproducible Benchmark Evaluation Table -->
+    <section id="benchmarks" class="glass-panel" style="padding: 1.75rem; margin-bottom: 2.5rem;">
+      <div class="section-header">
+        <h2 class="section-title">Deterministic Benchmark Suite Evaluation</h2>
+        <p class="section-subtitle">Real metrics extracted directly from <code>results/evaluation_report.json</code> verified across kinematic tracking.</p>
+      </div>
+
+      <div class="benchmark-table-container">
+        <table class="benchmark-table">
+          <thead>
+            <tr>
+              <th>Scenario Name</th>
+              <th>Plan Status</th>
+              <th>Expanded Nodes</th>
+              <th>Planning Time</th>
+              <th>Waypoints (Raw → Smooth)</th>
+              <th>Traveled Distance</th>
+              <th>Simulated Time</th>
+              <th>Outcome</th>
+              <th>Safety Policy</th>
+            </tr>
+          </thead>
+          <tbody id="benchmarkBody">
+            <!-- Populated dynamically via app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Safety Architecture & Guarantees -->
+    <section id="architecture" class="glass-panel" style="padding: 1.75rem;">
+      <div class="section-header">
+        <h2 class="section-title">Safety Contract & Invariant Guarantees</h2>
+        <p class="section-subtitle">Core algorithmic principles eliminating common robotics failure modes.</p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.25rem;">
+        <div style="padding: 1.25rem; background: rgba(15, 19, 26, 0.7); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <h3 style="font-size: 1rem; color: var(--accent-cyan); margin-bottom: 0.5rem;">Swept-Footprint Geometry</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">Evaluates continuous movement segment $S=[P_0, P_1]$ carrying circular envelope $R$ against all obstacle cells using exact slab intersections and extreme-point distance minimization. Tangential contact counts as collision.</p>
+        </div>
+        <div style="padding: 1.25rem; background: rgba(15, 19, 26, 0.7); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <h3 style="font-size: 1rem; color: var(--accent-emerald); margin-bottom: 0.5rem;">Temporary World Isolation</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">Dynamic obstacle detour replanning clones the base occupancy grid and rasterizes transient obstacle bodies onto isolated temporary layers. The permanent base map remains 100% immutable.</p>
+        </div>
+        <div style="padding: 1.25rem; background: rgba(15, 19, 26, 0.7); border-radius: var(--radius-sm); border: 1px solid var(--border-subtle);">
+          <h3 style="font-size: 1rem; color: var(--accent-rose); margin-bottom: 0.5rem;">Fail-Safe Halting Contract</h3>
+          <p style="font-size: 0.85rem; color: var(--text-secondary);">If passages are fully blocked or the replan budget is exhausted while in conflict, the controller commands zero velocities ($v=0, \omega=0$) and transitions to <code>BLOCKED</code> with zero collisions.</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <p>© 2026 AI-Based Autonomous Navigation System | Designed for High-Reliability Robotics</p>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

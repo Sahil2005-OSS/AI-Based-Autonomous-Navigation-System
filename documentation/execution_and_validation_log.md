@@ -617,3 +617,20 @@ This log tracks implementation steps, milestone deliverables, and verification p
      `$env:PYTHONPATH="src"; .\.venv\Scripts\pytest.exe -v`
      -> Exit code 0 (163 passed in 4.69s, 0 failures).
 - **Status:** Complete.
+
+---
+
+### Milestone 14: Visual Assets, Interactive Web Showcase & 2D LiDAR Sensor Simulation
+- **Date:** 2026-10-14
+- **Author:** Senior Python and Robotics Software Developer
+- **Scope & Objectives:**
+  - Automated visual evidence generation (`scripts/capture_assets.py`) saving high-resolution demonstration frames to `assets/demo_static_arena.png`, `assets/demo_dynamic_detour.png`, and `assets/demo_blocked_safestop.png`.
+  - Embedded screenshots into `README.md` demonstration walkthrough.
+  - Implemented interactive glassmorphic web dashboard in `web/` (`index.html`, `style.css`, `app.js`) with 2D HTML5 canvas simulation engine, real-time unicycle kinematics, dynamic obstacle animation, and benchmark explorer.
+  - Implemented 2D planar LiDAR sensor simulation in `src/autonomous_nav/lidar.py` with configurable FOV, Gaussian noise, raymarching, dropouts, and Euclidean cluster segmentation.
+  - Implemented comprehensive LiDAR unit test suite in `tests/test_lidar.py`.
+- **Validation Commands Executed & Outcomes:**
+  - Full Test Suite: `$env:PYTHONPATH="src"; .\.venv\Scripts\pytest.exe -q` -> Exit code 0 (174 passed in 5.44s, +11 new tests).
+  - Web Server Verification: `curl.exe http://127.0.0.1:8080 -I` -> Exit code 0 (`HTTP/1.0 200 OK`, 11.2 KB).
+  - Visual Assets Verification: All 3 PNG files rendered and confirmed on disk in `assets/`.
+- **Status:** Complete.
