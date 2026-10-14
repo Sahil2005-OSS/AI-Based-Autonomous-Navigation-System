@@ -157,20 +157,24 @@ When obstacles completely obstruct all possible corridors, the replanning system
 
 The project includes an interactive web dashboard with an HTML5 2D canvas simulation engine, real-time unicycle trajectory tracking, scenario switching, and live telemetry.
 
-1. Start the local server:
-   - Windows PowerShell:
-     ```powershell
-     .\.venv\Scripts\python.exe -m http.server 8080 --directory web
-     ```
-   - Linux / macOS:
-     ```bash
-     python3 -m http.server 8080 --directory web
-     ```
+- **Live Online Demo (GitHub Pages):**
+  Access the interactive simulation directly in your browser:
+  [https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/](https://sahil2005-oss.github.io/AI-Based-Autonomous-Navigation-System/)
 
-2. Open your web browser and navigate to:
-   ```text
-   http://localhost:8080
-   ```
+- **Run Locally via Python HTTP Server:**
+  1. Start the local server:
+     - Windows PowerShell:
+       ```powershell
+       .\.venv\Scripts\python.exe -m http.server 8080 --directory docs
+       ```
+     - Linux / macOS:
+       ```bash
+       python3 -m http.server 8080 --directory docs
+       ```
+  2. Open your web browser and navigate to:
+     ```text
+     http://localhost:8080
+     ```
 
 3. Interactive Dashboard Controls:
    - Scenario Selector: Switch between Default Arena, Dynamic Detour, Blocked Corridor, Wall Detour, and Open World.
